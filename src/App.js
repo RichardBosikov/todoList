@@ -1,25 +1,25 @@
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useState } from 'react';
+import styles from './App.module.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+export const App = () => {
+	const [todos, setTodos] = useState([]);
 
-export default App;
+	useEffect(() => {
+		fetch('https://mocki.io/v1/255ce33a-5633-455d-a943-31f03fadfe7b')
+			.then((loadedData) => loadedData.json())
+			.then((loadedTodos) => {
+				setTodos(loadedTodos);
+			});
+	}, []);
+
+	return (
+		<div className={styles.App}>
+			<h1 className={styles.h1}>TodoList</h1>
+			{todos.map(({ id, title, completed }) => (
+				<div key={id} className={styles.ttodo}>
+					{id}) {title}
+				</div>
+			))}
+		</div>
+	);
+};
