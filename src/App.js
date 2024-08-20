@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
+import { TodoList } from './components';
 import styles from './App.module.css';
 
 export const App = () => {
 	const [todos, setTodos] = useState([]);
 	const [newTodoTitle, setNewTodoTitle] = useState('');
-	const [isDeleting, setIsDeleting] = useState(false);
 	const [searchQuery, setSearchQuery] = useState('');
 
 	useEffect(() => {
@@ -53,16 +53,12 @@ export const App = () => {
 	};
 
 	const requestDeleteTodo = (id) => {
-		setIsDeleting(true);
 		fetch(`http://localhost:3005/todos/${id}`, {
 			method: 'DELETE',
 			headers: { 'Content-Type': 'application/json;charset=utf-8' },
-		})
-			.then((response) => response.json())
-			.then(() => {
-				setTodos(todos.filter((todo) => todo.id !== id));
-				setIsDeleting(false);
-			});
+		}).then(() => {
+			setTodos(todos.filter((todo) => todo.id !== id));
+		});
 	};
 
 	const filteredTodos = todos.filter((todo) =>
@@ -90,24 +86,11 @@ export const App = () => {
 				placeholder="Поиск дел"
 				className={styles.input}
 			/>
-
-			{filteredTodos.map(({ id, title }) => (
-				<div key={id} className={styles.todo}>
-					<input
-						type="text"
-						defaultValue={title}
-						onBlur={(e) => requestUpdateTodo(id, e.target.value)}
-						className={styles.input}
-					/>
-					<button
-						className={styles.button}
-						disabled={isDeleting}
-						onClick={() => requestDeleteTodo(id)}
-					>
-						Удалить
-					</button>
-				</div>
-			))}
+			<TodoList
+				todos={filteredTodos}
+				onSave={requestUpdateTodo}
+				onDelete={requestDeleteTodo}
+			/>
 		</div>
 	);
 };
