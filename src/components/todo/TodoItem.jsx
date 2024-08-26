@@ -1,32 +1,47 @@
-import React from "react"
+import React, { useState } from "react"
 import styles from './style.module.css';
 
-export const TodoItem = ({ title, onSave, onDelete }) => {
+export const TodoItem = ({ title, onSave, onDelete, initialText }) => {
+	const [isEditing, setIsEditing] = useState(false);
+	const [text, setText] = useState(initialText);
 
-	const handleSave = ({target}) => {
-		if(target.value === ''){
-			onDelete()
-		} else if (target.value!==title) {
+	const handleEdit = () => {
+	  setIsEditing(true);
+	};
 
-			onSave(target.value)
-		}
-
-	}
+	const handleSave = () => {
+	  if (text === '') {
+		onDelete();
+	  } else if (text !== title) {
+		onSave(text);
+	  }
+	  setIsEditing(false);
+	};
 
 	return (
-		<li className={styles.todo}>
+	  <li>
+		<div>
+		  {isEditing ? (
 			<input
-				type="text"
-				defaultValue={title}
-				onBlur={handleSave}
-				className={styles.input}
+			  type="text"
+			  value={text}
+			  onChange={(e) => setText(e.target.value)}
+			  onBlur={handleSave}
+			  onKeyDown={(e) => {
+				if (e.key === 'Enter') {
+				  handleSave();
+				}
+			  }}
+			  autoFocus
 			/>
-			<button
-				className={styles.button}
-				onClick={onDelete}
-			>
-				Удалить
-			</button>
-		</li>
-	)
-}
+		  ) : (
+			<span>{text}</span>
+		  )}
+		  <button onClick={handleEdit}>Редактировать</button>
+		</div>
+		<button className={styles.button} onClick={() => onDelete(title)}>
+		  Удалить
+		</button>
+	  </li>
+	);
+  };
